@@ -4,61 +4,60 @@ class Cargo:
 
 
 class BaseRobot:
-    def __init__(self, name: str, weight: int, coord: None) -> None:
-        if coord is None:
-            coord = [0, 0, 0]
+    def __init__(self, name: str, weight: int, coord: tuple[0, 0, 0]) -> None:
         self.name = name
         self.weight = weight
         self.coord = coord
 
     def go_forward(self, step: int = 1) -> None:
         if step > 0:
-            self.coord = self.coord.copy()
-            self.coord.copy()[1] += step
+            self.coord = self.coord
+            self.coord[1] += step
 
     def go_back(self, step: int = 1) -> None:
-        if step < 0:
-            self.coord = self.coord.copy()
-            self.coord.copy()[1] += step
+        if step > 0:
+            self.coord = self.coord
+            self.coord[1] += step
 
     def go_right(self, step: int = 1) -> None:
         if step > 0:
-            self.coord = self.coord.copy()
-            self.coord.copy()[0] += step
+            self.coord = self.coord
+            self.coord[0] += step
 
     def go_left(self, step: int = 1) -> None:
-        if step < 0:
-            self.coord = self.coord.copy()
-            self.coord.copy()[0] += step
+        if step > 0:
+            self.coord = self.coord
+            self.coord[0] += step
 
     def get_info(self) -> str:
         return f"Robot: {self.name}, Weight: {self.weight}"
 
 
 class FlyingRobot(BaseRobot):
-    def __init__(self, name: str, weight: int, coord: None) -> None:
+    def __init__(self, name: str, weight: int, coord: tuple[0, 0, 0]) -> None:
         super().__init__(name, weight, coord)
 
     def go_up(self, step: int = 1) -> None:
         if step > 0:
-            self.coord = self.coord.copy()
-            self.coord.copy()[2] += step
+            self.coord = self.coord
+            self.coord[2] += step
 
     def go_down(self, step: int = 1) -> None:
         if step < 0:
-            self.coord = self.coord.copy()
-            self.coord.copy()[2] += step
+            self.coord = self.coord
+            self.coord[2] += step
 
 
 class DeliveryDrone(FlyingRobot):
-    def __init__(self, name: str, weight: int, coord: None,
+    def __init__(self, name: str, weight: int, coord: tuple[0, 0, 0],
                  max_load_weight: int, current_load: None = 0) -> None:
         self.max_load_weight = max_load_weight
         self.current_load = current_load
         super().__init__(name, weight, coord)
 
     def hook_load(self, cargo: Cargo) -> None:
-        if self.current_load is None and cargo.weight < self.max_load_weight:
+        if (self.current_load + cargo.weight <= self.max_load_weight
+                and cargo.weight < self.max_load_weight):
             self.current_load = cargo.weight
 
     def unhook_load(self) -> None:
